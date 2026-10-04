@@ -10,6 +10,7 @@ import {
   codexApiProviderPresetVisionSupport,
   findCodexApiProviderPresetByBaseUrl,
   findCodexApiProviderPresetById,
+  resolveApiKeyEditAccountProviderMode,
 } from "./codexProviderPresets.ts";
 import { canConfigureCodexProviderVision, resolveCodexProviderCapabilityProfile } from "./codexProviderGateway.ts";
 
@@ -79,3 +80,14 @@ test("presets without a declared vision catalog report no image support", () => 
   assert.deepEqual(codexApiProviderPresetVisionSupport(preset), {});
   assert.deepEqual(codexApiProviderPresetVisionSupport(null), {});
 });
+
+test("API-key edits keep a linked account's access mode even when the base URL implies the other channel", () => {
+  assert.equal(resolveApiKeyEditAccountProviderMode("custom", true), "custom");
+  assert.equal(resolveApiKeyEditAccountProviderMode("openai_builtin", false), "openai_builtin");
+});
+
+test("API-key edits infer the access mode only for accounts that have none", () => {
+  assert.equal(resolveApiKeyEditAccountProviderMode(undefined, true), "openai_builtin");
+  assert.equal(resolveApiKeyEditAccountProviderMode(undefined, false), "custom");
+});
+

@@ -1,3 +1,5 @@
+import type { CodexApiProviderMode } from "../types/codex";
+
 export interface CodexApiProviderPreset {
   id: string;
   name: string;
@@ -468,6 +470,18 @@ export function resolveCodexApiProviderPresetId(rawBaseUrl: string): string {
     findCodexApiProviderPresetByBaseUrl(rawBaseUrl)?.id ??
     CODEX_API_PROVIDER_CUSTOM_ID
   );
+}
+
+/**
+ * 编辑凭据后关联账号应使用的接入模式。模式描述的是渠道（官方内置 vs 自定义），
+ * 不是凭据的内容：改 API Key 不得改写它，保留账号既有值，仅对没有模式的
+ * 存量账号按 Base URL 推断。按 Base URL 重算模式是「编辑供应商」路径的职责。
+ */
+export function resolveApiKeyEditAccountProviderMode(
+  currentMode: CodexApiProviderMode | undefined,
+  isOpenAIOfficial: boolean,
+): CodexApiProviderMode {
+  return currentMode ?? (isOpenAIOfficial ? "openai_builtin" : "custom");
 }
 
 /**

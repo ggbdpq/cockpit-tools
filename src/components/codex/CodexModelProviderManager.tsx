@@ -96,6 +96,7 @@ import type { Sponsor } from "../../types/sponsor";
 import {
   CODEX_API_PROVIDER_CUSTOM_ID,
   findCodexApiProviderPresetById,
+  resolveApiKeyEditAccountProviderMode,
   resolveCodexApiProviderPresetId,
 } from "../../utils/codexProviderPresets";
 import {
@@ -2503,10 +2504,13 @@ export function useCodexModelProviderManagerController({
       const presetId = resolveCodexApiProviderPresetId(savedProvider.baseUrl);
       const isOpenAIOfficial = presetId === "openai_official";
       const wireApi = resolveProviderWireApi(savedProvider);
-      const apiProviderMode = isOpenAIOfficial ? "openai_builtin" : "custom";
       const apiProviderId =
         presetId === CODEX_API_PROVIDER_CUSTOM_ID ? savedProvider.id : presetId;
       for (const account of linkedAccounts) {
+        const apiProviderMode = resolveApiKeyEditAccountProviderMode(
+          account.api_provider_mode,
+          isOpenAIOfficial,
+        );
         await updateCodexApiKeyCredentials(
           account.id,
           nextApiKey,
